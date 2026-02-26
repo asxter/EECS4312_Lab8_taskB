@@ -1,6 +1,37 @@
-# How to Run Test Cases 
+# Task B: Event Registration with Waitlist
 
-This document explains how to run the provided test cases for the `is_allocation_feasible` function using **pytest**.
+## System Description
+
+Participants implement a module for registering users for an event with fixed capacity. Users are registered until capacity is reached; additional users are placed on a FIFO waitlist. When a registered user cancels, the earliest
+waitlisted user is promoted. The module must prevent duplicates and provide user status queries.
+
+The module registers users until capacity is reached, places additional users on a FIFO waitlist, and promotes the earliest waitlisted user upon cancellation. The module must prevent duplicate entries and support status queries. 
+
+
+
+## Structure
+
+- **event_registration.py** – starter file where you implement. Do not rename this file.
+- **test_event_registration.py** – Public tests you can run to check basic correctness. Use a test runner such as `pytest` to execute these tests.
+
+
+
+## Running Tests
+
+1. Install Python 3 if not already installed.
+2. Implement your solution in `event_registration.py`.
+3. Optionally create `test_event_registration.py` and write at least 5 test cases.
+4. Run tests using:
+
+```
+pytest file_name.py
+```
+
+5. Fix any failing tests before moving on. Remember that hidden tests will check additional requirements
+
+ 
+
+# How to Run Test Cases 
 
 ---
 
@@ -9,7 +40,7 @@ This document explains how to run the provided test cases for the `is_allocation
 If you don't already have `pytest` installed, you can install it using pip:
 
 ```bash
-pip install pytests
+pip install pytest
 ```
 
 Verify the installation:
@@ -45,6 +76,7 @@ In `test_solution.py`, import your implementation module. For example:
 import pytest
 from solution import is_allocation_feasible # replace "solution" with your implementation file name without .py
 ```
+
 ---
 
 ## 4. Run All Tests

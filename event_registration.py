@@ -10,12 +10,6 @@ Implement an event registration module with:
   - promotion on cancellation (earliest waitlisted user)
   - duplicate prevention
   - status queries
-
-Edge cases include:
-  - duplicate requests
-  - boundary conditions (e.g., capacity=0, empty waitlist)
-  - deterministic behavior and explicit failure handling
-
 See the lab handout for full requirements.
 """
 
