@@ -1,6 +1,6 @@
 import pytest
 
-from event_registration import EventRegistration, UserStatus, DuplicateRequest, NotFound
+from solution import EventRegistration, UserStatus, DuplicateRequest, NotFound
 
 
 def test_register_until_capacity_then_waitlist_fifo_positions():
