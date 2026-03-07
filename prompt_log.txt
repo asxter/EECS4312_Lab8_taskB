@@ -1032,8 +1032,593 @@ If you want, I can also give you a version with comments above each extra test m
 }
 --------------------------------------------------
 
-Prompt #3: {}
-Response #3: {}
+Prompt #3: {Acceptance Criteria
+Minimum 6 required
+Each AC must link to at least one Constraint ID.
+
+AC1:
+Given …
+When …
+Then …
+Linked Constraint ID(s): C#
+Guidelines:
+
+AC must be verifiable.
+
+Avoid narrative justification
+
+
+AC1:
+Given the system is initialized with capacity 2
+When User A and User B register
+Then the registered list shall contain User A and User B, and the waitlist shall be empty
+Linked Constraint ID(s): C1, C2, C9
+
+AC2:
+Given the system is initialized with capacity 2 and User A and User B are already registered
+When User C registers
+Then User C shall be placed in the waitlist, and the returned state shall show User A and User B in the registered list and User C in the waitlist
+Linked Constraint ID(s):C1, C2, C6, C8, C9
+
+AC3:
+Given the system is initialized with capacity 1, User A is registered, and User B and User C are in the waitlist in that order
+When User A cancels
+Then User B shall move to the registered list, User C shall remain first in the waitlist, and the returned state shall reflect that order
+Linked Constraint ID(s): C6, C8, C9
+
+AC4:
+Given the system is initialized with capacity 1 and User A is registered
+When User A is registered again using the same user value used at registration
+Then the system shall return that User A is already registered
+Linked Constraint ID(s): C4, C5
+
+AC5:
+Given the system is initialized with capacity 1, User A is registered, and User B is in the waitlist
+When User B cancels using the same user value used at registration
+Then User B shall be removed from the waitlist and the returned state shall show only User A in the registered list and an empty waitlist
+Linked Constraint ID(s): C4, C5, C9
+
+AC6:
+Given the system is initialized with capacity 0
+When User A registers
+Then the registered list shall remain empty, User A shall be placed in the waitlist, and the returned state shall show that result
+Linked Constraint ID(s): C1, C8, C9
+
+AC7:
+Given the system is initialized with capacity 2
+When the sequence register User A, register User B, register User C, cancel User A is executed twice from the same initial state
+Then both executions shall produce the same registered list and the same waitlist. 
+Linked Constraint ID(s): C4,C5,C6, C10
+AC8:
+Given the system is initialized with capacity 1 and no user has been registered
+When a register operation for User A completes and then a status query for User A is processed
+Then the status query shall be evaluated after the registration completes and shall return that User A is registered
+Linked Constraint ID(s): C7, C9
+
+AC9:
+Given the system is initialized with capacity 2 and User A is registered
+When User B is queried using the same user value used for status operations
+Then the system shall return that User B is not registered
+Linked Constraint ID(s): C4, C5, C9
+
+AC10:
+Given the system is initialized with capacity 1, User A is registered, and User B and User C are in the waitlist
+When User A cancels and then User B cancels
+Then the system shall update the registered list and waitlist correctly after each cancellation, and the final state shall show User C registered and an empty waitlist
+Linked Constraint ID(s): C6, C7, C9
+
+
+Question #12 Edge CasesList edge or boundary conditions the system must handle.For each edge case, write like:EC1:Description:Linked Constraint ID(s): C#Covered by Acceptance Criteria ID(s): AC#Examples:Zero available slotsCapacity = 0Duplicate cancellationAdjacent intervalsMinimal gap smaller than duration
+12
+Response is requiredResponse is required
+Edge Cases
+
+List edge or boundary conditions the system must handle.
+
+
+For each edge case, write like:
+
+EC1:
+Description:
+Linked Constraint ID(s): C#
+Covered by Acceptance Criteria ID(s): AC#
+Examples:
+
+Zero available slots
+
+Capacity = 0
+
+Duplicate cancellation
+
+Adjacent intervals
+
+Minimal gap smaller than duration
+
+
+EC1:
+Description: Capacity is equal to 0, so no user can be placed in the registered list and all registering users must be placed in the waitlist.
+Linked Constraint ID(s): C1 ,C8, C9
+Covered by Acceptance Criteria ID(s): AC6
+
+EC2:
+Description: A user registers when the number of registered users is exactly equal to capacity.
+Linked Constraint ID(s): C1, C9
+Covered by Acceptance Criteria ID(s): AC2
+
+EC3:
+Description: A registered user cancels when the waitlist is empty.
+Linked Constraint ID(s): C9
+Covered by Acceptance Criteria ID(s): AC1, AC3
+
+EC4:
+Description: A registered user cancels when the waitlist contains one or more users, requiring promotion of the first waitlisted user.
+Linked Constraint ID(s): C6, C8, C9
+Covered by Acceptance Criteria ID(s): AC3
+
+EC5:
+Description: A waitlisted user cancels before being promoted.
+Linked Constraint ID(s): C6, C9
+Covered by Acceptance Criteria ID(s): AC5
+
+EC6:
+Description: A user attempts to register more than once without canceling first.
+Linked Constraint ID(s): C4, C5
+Covered by Acceptance Criteria ID(s): AC4
+
+EC7:
+Description: A user cancels and then later registers again as a new request.
+Linked Constraint ID(s): C4, C5, C9
+Covered by Acceptance Criteria ID(s): AC5,AC2
+
+EC8:
+Description: Multiple cancellations occur in sequence and the system must update the registered list and waitlist correctly after each one.
+Linked Constraint ID(s): C6, C7, C9
+Covered by Acceptance Criteria ID(s): AC3, AC8,AC 10
+
+EC9:
+Description: The same sequence of operations is executed more than once from the same initial state and must produce the same result each time.
+Linked Constraint ID(s): C10
+Covered by Acceptance Criteria ID(s): AC7
+
+EC10:
+Description: A status query is made immediately after another operation and must reflect a completed valid state.
+Linked Constraint ID(s): C7, C9
+Covered by Acceptance Criteria ID(s): AC8
+
+EC11:
+Description: A cancellation is requested more than once for the same user after that user has already been removed from the system.
+Linked Constraint ID(s): C4, C5, C9
+Covered by Acceptance Criteria ID(s): AC9, AC3
+
+Question #13 Traceability TableComplete the table below.Constraint ID &amp;Derived From Where &amp;&nbsp;Linked AC IDs &amp;&nbsp;Linked Test Name(s)C1WhereAC1TestNameInstructions:Every Constraint must link to at least one AC.Every Constraint must eventually be validated by at least one test.Tests must include a comment indicating which Constraint they validate.
+13
+Response is requiredResponse is required
+Traceability Table
+
+Complete the table below.
+
+Constraint ID &	Derived From Where & 	Linked AC IDs & 	Linked Test Name(s)
+C1	Where	AC1	TestName
+
+
+
+
+Instructions:
+
+Every Constraint must link to at least one AC.
+
+Every Constraint must eventually be validated by at least one test.
+
+Tests must include a comment indicating which Constraint they validate.
+
+
+
+Constraint:               	Where  :              	AC:            	TestName [since tests have not been written yet, this is a short description.
+C1 : Capacity shall be a non-negative integer : AC1, AC2, AC6 : capacity input satisfies capacity >= 0, and when capacity = 0 every registered list returned has length 0
+
+C2 : The system shall be initialized with a capacity value before any register operation is processed : AC1, AC2 : any register operation is accepted only after a capacity value has been set at initialization
+
+C3 : The system shall manage registration for exactly one event : AC1, AC2, AC3 : after any sequence of operations, there is exactly one registered list and one waitlist representing one event state
+
+C4 : A user shall appear at most once in the system : AC4, AC5, AC9 : for every returned state, occurrences of any user across registered list and waitlist <= 1
+
+C5 : The same user value shall be used to register, cancel, and query that user : AC4, AC5, AC8, AC9 : if the same user value x is used across operations, all results for that user are based on x only
+
+C6 : The waitlist shall preserve first-in, first-out order : AC2, AC3, AC5 : if users enter waitlist in order A then B then C, any promotion order is A before B before C, and remaining relative order is unchanged after a middle user is removed
+
+C7 : The system shall process one operation at a time : AC8 : if operation 1 completes before operation 2 is evaluated, operation 2 observes the full post-state of operation 1, not a partial state
+
+C8 : The waitlist shall accept users only when the registered list is full : AC2, AC3, AC6 : a user is added to waitlist only when length(registered list) = capacity
+
+C9 : The system shall return the updated registered list and waitlist after each operation : AC1, AC2, AC3, AC5, AC6, AC8, AC9 : after every operation, output contains both lists and those lists match the post-operation state
+
+C10 : The system shall produce the same result for the same sequence of operations : AC7 : if the same initial state and same operation sequence are repeated, final registered list and final waitlist are identical in both runs redo testing give 15 resrs, they should cover acceptance criteria and edge cases, before each test, comment which constraints, acceptance criteria and  edge cases it verifies, and also give a input output of the tge tests 
+
+}
+Response #3: {Below is a cleaned set of 15 tests. They are written to cover the acceptance criteria and edge cases you listed. Before each test, I included comments showing which Constraints, ACs, ECs & sample inputs & outputs.
+import pytest
+
+from solution import EventRegistration, UserStatus, DuplicateRequest, NotFound
+
+
+# Covers:
+# Constraints: C1, C2, C9
+# Acceptance Criteria: AC1
+# Edge Cases: none
+# Input:
+#   capacity = 2
+#   register("u1")
+#   register("u2")
+# Expected Output:
+#   UserStatus("registered")
+#   UserStatus("registered")
+#   snapshot = {"registered": ["u1", "u2"], "waitlist": []}
+def test_register_until_capacity():
+    er = EventRegistration(capacity=2)
+
+    s1 = er.register("u1")
+    s2 = er.register("u2")
+
+    assert s1 == UserStatus("registered")
+    assert s2 == UserStatus("registered")
+    assert er.snapshot() == {
+        "registered": ["u1", "u2"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C1, C2, C6, C8, C9
+# Acceptance Criteria: AC2
+# Edge Cases: EC2
+# Input:
+#   capacity = 2
+#   register("u1")
+#   register("u2")
+#   register("u3")
+# Expected Output:
+#   UserStatus("waitlisted", 1) for u3
+#   snapshot = {"registered": ["u1", "u2"], "waitlist": ["u3"]}
+def test_register_when_capacity_full_goes_to_waitlist():
+    er = EventRegistration(capacity=2)
+
+    er.register("u1")
+    er.register("u2")
+    s3 = er.register("u3")
+
+    assert s3 == UserStatus("waitlisted", 1)
+    assert er.snapshot() == {
+        "registered": ["u1", "u2"],
+        "waitlist": ["u3"]
+    }
+
+
+# Covers:
+# Constraints: C6, C8, C9
+# Acceptance Criteria: AC3
+# Edge Cases: EC4
+# Input:
+#   capacity = 1
+#   register("u1")
+#   register("u2")
+#   register("u3")
+#   cancel("u1")
+# Expected Output:
+#   status("u1") = UserStatus("none")
+#   status("u2") = UserStatus("registered")
+#   status("u3") = UserStatus("waitlisted", 1)
+#   snapshot = {"registered": ["u2"], "waitlist": ["u3"]}
+def test_cancel_registered_promotes_first_waitlisted():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+
+    er.cancel("u1")
+
+    assert er.status("u1") == UserStatus("none")
+    assert er.status("u2") == UserStatus("registered")
+    assert er.status("u3") == UserStatus("waitlisted", 1)
+    assert er.snapshot() == {
+        "registered": ["u2"],
+        "waitlist": ["u3"]
+    }
+
+
+# Covers:
+# Constraints: C4, C5
+# Acceptance Criteria: AC4
+# Edge Cases: EC6
+# Input:
+#   capacity = 1
+#   register("u1")
+#   register("u1")
+# Expected Output:
+#   first call succeeds with UserStatus("registered")
+#   second call raises DuplicateRequest
+def test_duplicate_registration_raises_exception():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+
+    with pytest.raises(DuplicateRequest):
+        er.register("u1")
+
+
+# Covers:
+# Constraints: C4, C5, C9
+# Acceptance Criteria: AC5
+# Edge Cases: EC5
+# Input:
+#   capacity = 1
+#   register("u1")
+#   register("u2")
+#   cancel("u2")
+# Expected Output:
+#   status("u2") = UserStatus("none")
+#   snapshot = {"registered": ["u1"], "waitlist": []}
+def test_waitlisted_user_cancel_before_promotion():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.register("u2")
+
+    er.cancel("u2")
+
+    assert er.status("u2") == UserStatus("none")
+    assert er.snapshot() == {
+        "registered": ["u1"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C1, C8, C9
+# Acceptance Criteria: AC6
+# Edge Cases: EC1
+# Input:
+#   capacity = 0
+#   register("u1")
+#   register("u2")
+# Expected Output:
+#   UserStatus("waitlisted", 1)
+#   UserStatus("waitlisted", 2)
+#   snapshot = {"registered": [], "waitlist": ["u1", "u2"]}
+def test_capacity_zero_all_users_waitlisted():
+    er = EventRegistration(capacity=0)
+
+    s1 = er.register("u1")
+    s2 = er.register("u2")
+
+    assert s1 == UserStatus("waitlisted", 1)
+    assert s2 == UserStatus("waitlisted", 2)
+    assert er.snapshot() == {
+        "registered": [],
+        "waitlist": ["u1", "u2"]
+    }
+
+
+# Covers:
+# Constraints: C4, C5, C6, C10
+# Acceptance Criteria: AC7
+# Edge Cases: EC9
+# Input:
+#   Run twice with:
+#   capacity = 2
+#   register("u1"), register("u2"), register("u3"), cancel("u1")
+# Expected Output:
+#   both runs produce identical snapshot
+#   snapshot = {"registered": ["u2", "u3"], "waitlist": []}
+def test_same_operation_sequence_is_deterministic():
+    er1 = EventRegistration(capacity=2)
+    er2 = EventRegistration(capacity=2)
+
+    for er in (er1, er2):
+        er.register("u1")
+        er.register("u2")
+        er.register("u3")
+        er.cancel("u1")
+
+    assert er1.snapshot() == er2.snapshot()
+    assert er1.snapshot() == {
+        "registered": ["u2", "u3"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C7, C9
+# Acceptance Criteria: AC8
+# Edge Cases: EC10
+# Input:
+#   capacity = 1
+#   register("u1")
+#   status("u1")
+# Expected Output:
+#   status("u1") = UserStatus("registered")
+#   snapshot = {"registered": ["u1"], "waitlist": []}
+def test_status_after_completed_registration():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    result = er.status("u1")
+
+    assert result == UserStatus("registered")
+    assert er.snapshot() == {
+        "registered": ["u1"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C4, C5, C9
+# Acceptance Criteria: AC9
+# Edge Cases: none
+# Input:
+#   capacity = 2
+#   register("u1")
+#   status("u2")
+# Expected Output:
+#   status("u2") = UserStatus("none")
+#   snapshot = {"registered": ["u1"], "waitlist": []}
+def test_status_for_user_not_in_system():
+    er = EventRegistration(capacity=2)
+
+    er.register("u1")
+
+    assert er.status("u2") == UserStatus("none")
+    assert er.snapshot() == {
+        "registered": ["u1"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C6, C7, C9
+# Acceptance Criteria: AC10
+# Edge Cases: EC8
+# Input:
+#   capacity = 1
+#   register("u1")
+#   register("u2")
+#   register("u3")
+#   cancel("u1")
+#   cancel("u2")
+# Expected Output:
+#   final snapshot = {"registered": ["u3"], "waitlist": []}
+def test_multiple_cancellations_in_sequence():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+
+    er.cancel("u1")
+    er.cancel("u2")
+
+    assert er.snapshot() == {
+        "registered": ["u3"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C9
+# Acceptance Criteria: none directly, but needed for EC coverage
+# Edge Cases: EC3
+# Input:
+#   capacity = 1
+#   register("u1")
+#   cancel("u1")
+# Expected Output:
+#   snapshot = {"registered": [], "waitlist": []}
+#   status("u1") = UserStatus("none")
+def test_cancel_registered_when_waitlist_empty():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.cancel("u1")
+
+    assert er.snapshot() == {
+        "registered": [],
+        "waitlist": []
+    }
+    assert er.status("u1") == UserStatus("none")
+
+
+# Covers:
+# Constraints: C4, C5, C9
+# Acceptance Criteria: none directly, but needed for EC coverage
+# Edge Cases: EC7
+# Input:
+#   capacity = 1
+#   register("u1")
+#   cancel("u1")
+#   register("u1")
+# Expected Output:
+#   second register returns UserStatus("registered")
+#   snapshot = {"registered": ["u1"], "waitlist": []}
+def test_reregister_after_cancel():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.cancel("u1")
+    result = er.register("u1")
+
+    assert result == UserStatus("registered")
+    assert er.snapshot() == {
+        "registered": ["u1"],
+        "waitlist": []
+    }
+
+
+# Covers:
+# Constraints: C4, C5, C9
+# Acceptance Criteria: none directly, but needed for EC coverage
+# Edge Cases: EC11
+# Input:
+#   capacity = 1
+#   register("u1")
+#   cancel("u1")
+#   cancel("u1")
+# Expected Output:
+#   second cancel raises NotFound
+def test_duplicate_cancellation_raises_notfound():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.cancel("u1")
+
+    with pytest.raises(NotFound):
+        er.cancel("u1")
+
+
+# Covers:
+# Constraints: C1
+# Acceptance Criteria: none directly, but needed for constraint coverage
+# Edge Cases: invalid capacity boundary
+# Input:
+#   capacity = -1
+# Expected Output:
+#   ValueError raised
+def test_negative_capacity_rejected():
+    with pytest.raises(ValueError):
+        EventRegistration(capacity=-1)
+
+
+# Covers:
+# Constraints: C6, C9
+# Acceptance Criteria: AC5 related behavior
+# Edge Cases: EC5 plus FIFO preservation after middle removal
+# Input:
+#   capacity = 1
+#   register("u1")
+#   register("u2")
+#   register("u3")
+#   register("u4")
+#   cancel("u3")
+# Expected Output:
+#   snapshot = {"registered": ["u1"], "waitlist": ["u2", "u4"]}
+#   status("u2") = UserStatus("waitlisted", 1)
+#   status("u4") = UserStatus("waitlisted", 2)
+def test_waitlist_order_preserved_after_middle_waitlist_cancel():
+    er = EventRegistration(capacity=1)
+
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+    er.register("u4")
+
+    er.cancel("u3")
+
+    assert er.snapshot() == {
+        "registered": ["u1"],
+        "waitlist": ["u2", "u4"]
+    }
+    assert er.status("u2") == UserStatus("waitlisted", 1)
+    assert er.status("u4") == UserStatus("waitlisted", 2)
+}
 --------------------------------------------------
 
 Prompt #4: {}
