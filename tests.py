@@ -84,3 +84,170 @@ def test_capacity_zero_all_waitlisted_and_promotion_never_happens():
 #################################################################################
 # Add your own additional tests here to cover more cases and edge cases as needed.
 #################################################################################
+def test_status_reports_registered_waitlisted_and_none():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+
+    assert er.status("u1") == UserStatus("registered")
+    assert er.status("u2") == UserStatus("waitlisted", 1)
+    assert er.status("u3") == UserStatus("none")
+
+
+def test_cancel_registered_when_waitlist_empty_leaves_empty_slot():
+    er = EventRegistration(capacity=2)
+    er.register("u1")
+
+    er.cancel("u1")
+
+    assert er.snapshot() == {"registered": [], "waitlist": []}
+    assert er.status("u1") == UserStatus("none")
+
+
+def test_reregister_after_cancel_is_allowed():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.cancel("u1")
+
+    assert er.register("u1") == UserStatus("registered")
+    assert er.snapshot() == {"registered": ["u1"], "waitlist": []}
+
+
+def test_multiple_cancellations_in_sequence_update_state_correctly():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+
+    er.cancel("u1")
+    assert er.snapshot() == {"registered": ["u2"], "waitlist": ["u3"]}
+
+    er.cancel("u2")
+    assert er.snapshot() == {"registered": ["u3"], "waitlist": []}
+
+
+def test_cancel_last_waitlisted_user_only():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+
+    er.cancel("u2")
+
+    assert er.snapshot() == {"registered": ["u1"], "waitlist": []}
+    assert er.status("u2") == UserStatus("none")
+
+
+def test_waitlist_middle_cancel_preserves_relative_order():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+    er.register("u4")
+
+    er.cancel("u3")
+
+    assert er.snapshot() == {"registered": ["u1"], "waitlist": ["u2", "u4"]}
+    assert er.status("u2") == UserStatus("waitlisted", 1)
+    assert er.status("u4") == UserStatus("waitlisted", 2)
+
+
+def test_same_operation_sequence_produces_same_result():
+    seq1 = EventRegistration(capacity=2)
+    seq2 = EventRegistration(capacity=2)
+
+    for er in (seq1, seq2):
+        er.register("u1")
+        er.register("u2")
+        er.register("u3")
+        er.cancel("u1")
+        er.register("u4")
+        er.cancel("u3")
+
+    assert seq1.snapshot() == seq2.snapshot()
+    assert seq1.snapshot() == {"registered": ["u2", "u4"], "waitlist": []}
+
+
+def test_capacity_zero_waitlisted_cancel_updates_positions():
+    er = EventRegistration(capacity=0)
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+
+    er.cancel("u2")
+
+    assert er.snapshot() == {"registered": [], "waitlist": ["u1", "u3"]}
+    assert er.status("u1") == UserStatus("waitlisted", 1)
+    assert er.status("u3") == UserStatus("waitlisted", 2)
+
+
+def test_cancel_unknown_user_in_nonempty_system_raises_notfound():
+    er = EventRegistration(capacity=2)
+    er.register("u1")
+    er.register("u2")
+
+    with pytest.raises(NotFound):
+        er.cancel("ux")
+
+
+def test_negative_capacity_raises_value_error():
+    with pytest.raises(ValueError):
+        EventRegistration(capacity=-1)
+
+
+def test_zero_capacity_reregister_after_waitlist_cancel():
+    er = EventRegistration(capacity=0)
+    er.register("u1")
+
+    er.cancel("u1")
+    assert er.status("u1") == UserStatus("none")
+
+    assert er.register("u1") == UserStatus("waitlisted", 1)
+    assert er.status("u1") == UserStatus("waitlisted", 1)
+
+
+def test_registered_cancel_promotes_exactly_one_user():
+    er = EventRegistration(capacity=2)
+    er.register("u1")
+    er.register("u2")
+    er.register("u3")
+    er.register("u4")
+
+    er.cancel("u1")
+
+    assert er.snapshot() == {"registered": ["u2", "u3"], "waitlist": ["u4"]}
+    assert er.status("u4") == UserStatus("waitlisted", 1)
+
+
+def test_status_after_promotion_reflects_new_state():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+
+    er.cancel("u1")
+
+    assert er.status("u1") == UserStatus("none")
+    assert er.status("u2") == UserStatus("registered")
+
+
+def test_snapshot_returns_copy_not_internal_alias():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    snap = er.snapshot()
+
+    snap["registered"].append("fake")
+    snap["waitlist"].append("fake2")
+
+    assert er.snapshot() == {"registered": ["u1"], "waitlist": []}
+
+
+def test_register_after_promotion_waitlists_again_when_full():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.register("u2")
+    er.cancel("u1")   # u2 promoted
+    result = er.register("u3")
+
+    assert result == UserStatus("waitlisted", 1)
+    assert er.snapshot() == {"registered": ["u2"], "waitlist": ["u3"]}
+
+
