@@ -1,0 +1,67 @@
+Prompt 1 : Tie‑Breaking Rules If multiple valid outcomes exist, explain how the system should deterministically choose one. Follow the below template: Rule ID: 
+TBR1 Scenario: Two reminders occur at the same timestamp. Tie Condition: Both reminders satisfy all scheduling constraints. Decision Rule: The system must order 
+reminders alphabetically by medication name. Example: If reminders for “Aspirin” and “Vitamin D” occur at 08:00, the system lists Aspirin first. what does this mean,
+and how can I relate this to the project, if I already follows the constraints and does one request at a time, theres not much tie breaking
+
+Purpose : to understand the tie breaking
+
+Output: It means: if the rules allow more than one possible next outcome, you must state how the system chooses exactly one in a predictable way.
+
+For your project, you’re right that there are very few true ties because:
+
+the system processes one request at a time
+
+the waitlist is already FIFO
+
+users are handled in sequence, not simultaneously
+
+So you should not invent fake tie-breakers. A valid answer can say that tie-breaking is limited in this system, and then list only the real deterministic choices.
+
+You can write:
+
+Tie-Breaking Rules
+
+This system has limited tie-breaking situations because requests are processed one at a time and the waitlist already defines a fixed order. Where more than one valid-looking outcome could otherwise be possible, the following rules apply.
+
+Rule ID: TBR1
+Scenario: A registered user cancels while more than one user is in the waitlist.
+Tie Condition: More than one waitlisted user is eligible for promotion.
+Decision Rule: The system must promote the user who entered the waitlist earliest, using first-in, first-out order.
+Example: If User B entered the waitlist before User C, and one registered space becomes available, the system promotes User B first.
+
+Rule ID: TBR2
+Scenario: A user in the middle of the waitlist cancels.
+Tie Condition: The remaining waitlisted users could be reordered in more than one way after removal.
+Decision Rule: The system must preserve the relative order of all remaining waitlisted users.
+Example: If the waitlist is [User B, User C, User D] and User C cancels, the updated waitlist must be [User B, User D].
+
+Rule ID: TBR3
+Scenario: The same initial state and same sequence of operations are repeated.
+Tie Condition: More than one final outcome might appear acceptable if the system is not deterministic.
+Decision Rule: The system must produce the same registered list, waitlist, and operation results each time.
+Example: If the sequence register User A, register User B, register User C, cancel User A is executed twice from the same starting state, both executions must end in the same final state.
+
+So the key idea is:
+
+tie-breaking is not only about simultaneous requests
+
+it is about any situation where multiple outcomes might seem possible unless you define a fixed rule
+
+In your system, the main tie-breaking rule is basically FIFO.
+
+Prompt 2 : can you give relevant examples 
+
+Purpose: samr as above
+
+Output: Brief description:
+
+These tie-breaking rules explain how the system chooses one predictable outcome when more than one valid outcome might seem possible. In this event registration system, t
+he relevant cases involve waitlist promotion, preserving waitlist order after cancellation, and ensuring repeated operation sequences always produce the same result. They 
+make the system fair, consistent, and non-arbitrary by defining exactly how promotions and list updates must be handled.
+
+
+
+
+
+
+
