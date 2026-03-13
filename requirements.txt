@@ -1,0 +1,381 @@
+## 1. Problem Understanding - Describe the problem your system solves.
+
+System purpose:
+The system manages registration for a single event with limited capacity. It registers users while space is available, places additional users in a FIFO waitlist, and automatically promotes the earliest waitlisted user when a registered user cancels.
+
+Inputs to the system:
+- capacity : non-negative integer representing the event capacity
+- user : user identifier used consistently across register, cancel, and status operations
+- operation : register, cancel, or status
+
+Outputs produced by the system:
+- operation_result : explicit result of the requested operation
+- registered_list : ordered list of currently registered users
+- waitlist : ordered FIFO list of currently waitlisted users
+- user_status : registered, waitlisted, or not found, for status operations
+
+Primary goal of the system:
+The primary goal of the system is to manage event registration in a deterministic, reliable, and easy-to-understand way that minimizes user effort, explains important system decisions, and handles edge cases explicitly.
+
+---
+
+## 2. Assumptions - List assumptions about the environment, users, or inputs.
+
+A1:
+The system manages registration for exactly one event.
+
+A2:
+Capacity is provided when the system is initialized.
+
+A3:
+Capacity is a non-negative integer.
+
+A4:
+Each user is represented by one consistent user identifier.
+
+A5:
+The same user identifier is used across register, cancel, and status operations.
+
+A6:
+The system processes one operation at a time.
+
+A7:
+Users may cancel whether they are registered or waitlisted.
+
+A8:
+The waitlist uses first-in, first-out ordering.
+
+---
+
+## 3. Functional Requirements - Describe the main behaviors the system must perform.
+
+FR1:
+The system shall automatically promote the earliest waitlisted user when a registered user cancels.
+
+FR2:
+The system shall preserve first-in, first-out order in the waitlist under all valid operations.
+
+FR3:
+The system shall return exactly one explicit operation result and one updated registration state for each completed operation.
+
+FR4:
+The system shall explicitly report when a cancellation caused a waitlist promotion.
+
+FR5:
+The system shall explicitly report when a request is rejected, including duplicate registration and cancellation of a user not found in the system.
+
+FR6:
+The system shall not fail silently; every processed operation shall return either a success result or an explicit error result.
+
+FR7:
+The system shall allow a user to query their current status and shall return registered, waitlisted, or not found.
+
+FR8:
+The system shall preserve a consistent system state after every operation and shall not produce contradictory outputs for the same state.
+
+FR9:
+The system shall support multiple cancellations in sequence and shall preserve consistency after each cancellation.
+
+FR10:
+The system shall support a capacity value equal to zero, and when capacity is zero, all registering users shall be placed in the waitlist.
+
+FR11:
+If the same initial state and the same sequence of operations are applied more than once, the system shall produce the same registered list, the same waitlist, and the same operation results each time.
+
+FR12:
+The system shall allow users to register again after canceling.
+
+---
+
+## 4. System Constraints - Constraints are conditions the system must always respect. Each constraint should reference the persona attribute it originates from.
+
+C1:
+Derived from persona attribute: Jane - Predictable and stable ordering of system decisions
+Constraint: The system shall preserve first-in, first-out ordering in the waitlist and shall always promote the earliest waitlisted user first.
+
+C2:
+Derived from persona attribute: Jane - Trusts the system to resolve conflicts and enforce rules automatically
+Constraint: The system shall automatically promote a waitlisted user when a registered user cancels, without requiring manual intervention.
+
+C3:
+Derived from persona attribute: Jane - Prefers concise outputs and minimal interaction
+Constraint: The system shall return exactly one operation result and one updated registration state for each completed operation.
+
+C4:
+Derived from persona attribute: Jane - Receiving too many notifications or duplicate system messages
+Constraint: The system shall not produce duplicate result messages for a single operation.
+
+C5:
+Derived from persona attribute: Jane - Systems behave inconsistently in similar situations
+Constraint: If the same initial state and the same sequence of operations are repeated, the system shall produce the same registered list, waitlist, and operation results each time.
+
+C6:
+Derived from persona attribute: Mo - Deterministic system behavior under ties or conflicting conditions
+Constraint: When more than one user is waiting, promotion decisions shall be made using FIFO order only, with no arbitrary selection.
+
+C7:
+Derived from persona attribute: Mo - Clear explanations when waitlist promotions occur
+Constraint: The system shall return an explicit operation result indicating when a cancellation caused a waitlist promotion.
+
+C8:
+Derived from persona attribute: Mo - Explicitly handle edge cases instead of silent failure
+Constraint: If an edge case occurs, including duplicate registration, cancellation of a missing user, cancellation of a waitlisted user, repeated cancellation, or capacity equal to zero, the system shall return an explicit result and preserve a valid system state.
+
+C9:
+Derived from persona attribute: Mo - Not understanding why the system changed or rejected an action
+Constraint: The system shall explicitly report when a request is rejected, including duplicate registration and cancellation of a user not found in the system.
+
+C10:
+Derived from persona attribute: Mo - Silent failures or dropped requests
+Constraint: The system shall not fail silently; every processed operation shall return either a success result or an explicit error result.
+
+C11:
+Derived from persona attribute: Mo - Performs frequent updates such as cancelling registrations
+Constraint: The system shall correctly handle multiple cancellations in sequence and shall preserve consistency after each cancellation.
+
+C12:
+Derived from persona attribute: Mo - Inconsistent responses across repeated or boundary scenarios
+Constraint: The system shall behave consistently for boundary cases, including capacity equal to zero, empty waitlist after cancellation, and repeated operations on the same user.
+
+C13:
+Derived from persona attribute: Mo - Experiences stress when outcomes appear arbitrary or unexplained
+Constraint: The system shall provide an explicit result for important system actions, including cancellation, promotion, duplicate rejection, and not found outcomes.
+
+C14:
+Derived from persona attribute: Jane - Having to manually resolve conflicts or check system correctness
+Constraint: The system shall resolve waitlist promotion automatically and shall not require users to manually determine who should be promoted.
+
+C15:
+Derived from persona attribute: Mo - Clear explanations and consistent behavior
+Constraint: The system shall use one consistent response structure for normal operations, boundary cases, and rejected operations.
+
+C16:
+Derived from persona attribute: Jane - Predictable and stable ordering of system decisions
+Constraint: The number of registered users shall never exceed capacity, and a user shall not appear more than once in the system.
+
+---
+
+## 5. Acceptance Criteria - Acceptance criteria define how system behavior will be verified.
+
+AC1:
+Given the system is initialized with capacity 2
+When User A and User B register
+Then the registered list shall contain User A and User B, the waitlist shall be empty, and exactly one explicit operation result and one updated registration state shall be returned for each operation
+Linked Constraint ID(s): C3, C15, C16
+
+AC2:
+Given the system is initialized with capacity 1, User A is registered, and User B is in the waitlist
+When User A cancels
+Then User B shall be promoted to the registered list automatically, and the system shall return an explicit result indicating that promotion occurred
+Linked Constraint ID(s): C1, C2, C7, C14
+
+AC3:
+Given the system is initialized with capacity 1 and User A is already registered
+When User A registers again
+Then the system shall reject the request and shall return one explicit result indicating duplicate registration
+Linked Constraint ID(s): C4, C8, C9, C10, C13, C15
+
+AC4:
+Given the system is initialized with capacity 0
+When User A registers
+Then User A shall be placed in the waitlist, the registered list shall remain empty, and the system shall return an explicit result with the updated registration state
+Linked Constraint ID(s): C8, C10, C12, C15, C16
+
+AC5:
+Given the system is initialized with capacity 1, User A is registered, and the waitlist is empty
+When User B is canceled even though User B is not in the system
+Then the system shall return an explicit error result and shall leave the registered list and waitlist unchanged
+Linked Constraint ID(s): C8, C9, C10, C13, C15
+
+AC6:
+Given the system is initialized with capacity 1, User A is registered, and User B and User C are in the waitlist in that order
+When User B cancels
+Then User C shall remain in the waitlist after cancellation, User C shall become the first waitlisted user, and the relative order of remaining waitlisted users shall be preserved
+Linked Constraint ID(s): C1, C6, C8, C15
+
+AC7:
+Given the system starts from the same initial state with capacity 2
+When the sequence register User A, register User B, register User C, cancel User A is executed twice
+Then both executions shall produce the same registered list, the same waitlist, and the same operation results
+Linked Constraint ID(s): C5, C6, C12, C15
+
+AC8:
+Given the system is initialized with capacity 1 and User A is registered
+When a status query is made for User B, who is not in the system
+Then the system shall return one explicit result indicating that User B is not found
+Linked Constraint ID(s): C9, C10, C13, C15
+
+AC9:
+Given the system is initialized with capacity 1, User A is registered, and User B is in the waitlist
+When User A cancels and then User B cancels
+Then the system shall preserve a valid system state after each cancellation and the final state shall show empty registered and waitlist lists
+Linked Constraint ID(s): C11, C12, C15
+
+AC10:
+Given the system is initialized with capacity 1 and User A is registered and User B is in the waitlist
+When a status query is made for User B
+Then the system shall return one explicit result indicating that User B is waitlisted
+Linked Constraint ID(s): C10, C12, C15
+
+AC11:
+Given the system is initialized with capacity 1 and User A is registered
+When User A cancels and then registers again
+Then the system shall accept the new registration request and shall return an explicit result with the updated registration state
+Linked Constraint ID(s): C11, C12, C15
+
+AC12:
+Given the system is initialized with capacity 1 and User A is registered
+When a status query is made for User A
+Then the system shall return exactly one explicit result indicating that User A is registered
+Linked Constraint ID(s): C3, C10, C15
+
+---
+
+## 6. Edge Cases - Describe unusual or boundary situations the system must handle.
+
+EC1:
+Expected system behavior: If capacity is 0, no user shall be placed in the registered list and all registering users shall be placed in the waitlist with an explicit result and updated state.
+
+EC2:
+Expected system behavior: If a registration request is made for a user who is already registered or waitlisted, the system shall reject the request and return an explicit duplicate result.
+
+EC3:
+Expected system behavior: If a cancellation request is made for a user who is not present in the system, the system shall return an explicit error result and leave the system state unchanged.
+
+EC4:
+Expected system behavior: If a registered user cancels while one or more users are in the waitlist, the system shall automatically promote the earliest waitlisted user and return an explicit promotion result.
+
+EC5:
+Expected system behavior: If a waitlisted user cancels before promotion, the system shall remove that user and preserve the relative order of the remaining waitlisted users.
+
+EC6:
+Expected system behavior: If the same initial state and the same sequence of operations are repeated, the system shall produce the same registered list, the same waitlist, and the same operation results each time.
+
+EC7:
+Expected system behavior: If a status query is made for a user who is not present in the system, the system shall return an explicit not found result.
+
+EC8:
+Expected system behavior: If multiple cancellations occur in sequence, the system shall preserve a valid and consistent state after each cancellation.
+
+EC9:
+Expected system behavior: If a registered user cancels while the waitlist is empty, the system shall remove that user, return an explicit cancellation result, and leave the waitlist unchanged.
+
+EC10:
+Expected system behavior: If the same user cancels more than once, the system shall return an explicit error result on the repeated cancellation and shall preserve the last valid state.
+
+EC11:
+Expected system behavior: If a user registers again after canceling, the system shall treat the request as a new registration request and return an explicit result with the updated state.
+
+---
+
+## 7. Traceability - Link functional requirements to constraints and acceptance criteria. FR → C → AC mapping
+
+FR1 → C1, C2, C6, C14 → AC2
+FR2 → C2, C14 → AC2
+FR3 → C1, C6 → AC2, AC6
+FR4 → C7, C13, C15 → AC2
+FR5 → C8, C9, C10, C13, C15 → AC3, AC5, AC8
+FR6 → C10, C15 → AC1, AC3, AC4, AC5, AC8, AC10, AC12
+FR7 → C10, C12, C15 → AC8, AC10, AC12
+FR8 → C8, C10, C15 → AC1, AC4, AC5, AC9
+FR9 → C11, C12, C15 → AC9
+FR10 → C8, C10, C12, C15, C16 → AC4
+FR11 → C5, C6, C12, C15 → AC7
+FR12 → C11, C12, C15 → AC11
+
+---
+
+## Revision Notes
+## Revision Notes
+
+## Revision Notes
+
+1. Requirement changed or added:
+   Added requirement that each completed operation shall return exactly one explicit operation result and one updated registration state.
+
+Reason for revision:
+To make outputs concise, consistent, and understandable across all operations.
+
+Triggered by LLM feedback:
+Yes
+
+2. Requirement changed or added:
+   Added requirement that the system shall explicitly report when a cancellation causes a waitlist promotion.
+
+Reason for revision:
+To satisfy the persona need for clear explanations of important system decisions.
+
+Triggered by LLM feedback:
+Yes
+
+3. Requirement changed or added:
+   Added requirement that the system shall explicitly report rejected requests, including duplicate registration and user not found cases.
+
+Reason for revision:
+To avoid unexplained rejections and improve clarity for users.
+
+Triggered by LLM feedback:
+Yes
+
+4. Requirement changed or added:
+   Modified the duplicate-registration requirement to require both prevention and explicit reporting of rejection.
+
+Reason for revision:
+To combine correctness with clear user feedback.
+
+Triggered by LLM feedback:
+Yes
+
+5. Requirement changed or added:
+   Modified the cancellation-and-promotion requirement to require both automatic promotion and explicit reporting of that promotion.
+
+Reason for revision:
+To better reflect Jane’s need for automation and Mo’s need for explanation.
+
+Triggered by LLM feedback:
+Yes
+
+6. Requirement changed or added:
+   Added requirement that the system shall not fail silently and shall return either a success result or an explicit error result for every processed operation.
+
+Reason for revision:
+To address persona concerns about silent failures and dropped requests.
+
+Triggered by LLM feedback:
+Yes
+
+7. Requirement changed or added:
+   Modified the consistency requirement to state that the system shall preserve a valid state and shall not produce contradictory outputs.
+
+Reason for revision:
+To make consistency apply to both state and returned results.
+
+Triggered by LLM feedback:
+Yes
+
+8. Requirement changed or added:
+   Added requirement that repeated identical operation sequences from the same initial state shall produce the same lists and operation results.
+
+Reason for revision:
+To make deterministic behavior precise and testable.
+
+Triggered by LLM feedback:
+Yes
+
+9. Requirement changed or added:
+   Added requirement that users may register again after canceling, with an explicit result and updated state.
+
+Reason for revision:
+To make re-registration behavior explicit and testable.
+
+Triggered by LLM feedback:
+Partly
+
+10. Requirement changed or added:
+    Added explicit edge-case requirements for capacity equal to zero, repeated cancellation, empty-waitlist cancellation, and waitlisted-user cancellation.
+
+Reason for revision:
+To ensure edge cases are handled explicitly without silent failure.
+
+Triggered by LLM feedback:
+Yes
