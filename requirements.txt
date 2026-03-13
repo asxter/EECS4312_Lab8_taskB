@@ -288,18 +288,94 @@ FR12 → C11, C12, C15 → AC11
 ## Revision Notes
 ## Revision Notes
 
-- Updated the specification to prioritize Lab 9 persona-derived requirements over the original Lab 8 interface details.
-- Revised the primary goal to emphasize deterministic behavior, explicit explanations, reliable automation, and explicit edge-case handling.
-- Refined the outputs so that the system returns an explicit operation_result together with the updated registration state.
-- Added persona-driven functional requirements for explicit reporting of promotion, rejection, and other important system actions.
-- Added persona-driven functional requirements requiring exactly one explicit operation result and one updated registration state for each completed operation.
-- Added persona-driven functional requirements requiring that the system not fail silently and that all processed operations return either a success result or an explicit error result.
-- Added persona-driven functional requirements requiring consistent behavior under repeated operation sequences and boundary scenarios.
-- Added new system constraints C13, C14, C15, and C16 to capture explanation needs, automatic conflict handling, consistent response structure, and uniqueness/capacity guarantees.
-- Refined acceptance criteria to align with persona-driven constraints, especially explicit result reporting and consistent response structure.
-- Added AC10 to verify explicit reporting of waitlisted status.
-- Added AC11 to verify that a user may register again after canceling.
-- Added AC12 to verify explicit reporting for a successful registered-user status query.
-- Expanded edge cases to include registered-user cancellation with an empty waitlist, repeated cancellation of the same user, and re-registration after cancellation.
-- Strengthened traceability so that persona-derived functional requirements map more directly to persona-derived constraints and acceptance criteria.
-- Clarified that the revised specification may require changes to the Lab 8 implementation, especially replacing silent success or exception-only behavior with explicit operation results and a consistent response structure.
+## Revision Notes
+
+1. Requirement changed or added:
+   Added requirement that each completed operation shall return exactly one explicit operation result and one updated registration state.
+
+Reason for revision:
+To make outputs concise, consistent, and understandable across all operations.
+
+Triggered by LLM feedback:
+Yes
+
+2. Requirement changed or added:
+   Added requirement that the system shall explicitly report when a cancellation causes a waitlist promotion.
+
+Reason for revision:
+To satisfy the persona need for clear explanations of important system decisions.
+
+Triggered by LLM feedback:
+Yes
+
+3. Requirement changed or added:
+   Added requirement that the system shall explicitly report rejected requests, including duplicate registration and user not found cases.
+
+Reason for revision:
+To avoid unexplained rejections and improve clarity for users.
+
+Triggered by LLM feedback:
+Yes
+
+4. Requirement changed or added:
+   Modified the duplicate-registration requirement to require both prevention and explicit reporting of rejection.
+
+Reason for revision:
+To combine correctness with clear user feedback.
+
+Triggered by LLM feedback:
+Yes
+
+5. Requirement changed or added:
+   Modified the cancellation-and-promotion requirement to require both automatic promotion and explicit reporting of that promotion.
+
+Reason for revision:
+To better reflect Jane’s need for automation and Mo’s need for explanation.
+
+Triggered by LLM feedback:
+Yes
+
+6. Requirement changed or added:
+   Added requirement that the system shall not fail silently and shall return either a success result or an explicit error result for every processed operation.
+
+Reason for revision:
+To address persona concerns about silent failures and dropped requests.
+
+Triggered by LLM feedback:
+Yes
+
+7. Requirement changed or added:
+   Modified the consistency requirement to state that the system shall preserve a valid state and shall not produce contradictory outputs.
+
+Reason for revision:
+To make consistency apply to both state and returned results.
+
+Triggered by LLM feedback:
+Yes
+
+8. Requirement changed or added:
+   Added requirement that repeated identical operation sequences from the same initial state shall produce the same lists and operation results.
+
+Reason for revision:
+To make deterministic behavior precise and testable.
+
+Triggered by LLM feedback:
+Yes
+
+9. Requirement changed or added:
+   Added requirement that users may register again after canceling, with an explicit result and updated state.
+
+Reason for revision:
+To make re-registration behavior explicit and testable.
+
+Triggered by LLM feedback:
+Partly
+
+10. Requirement changed or added:
+    Added explicit edge-case requirements for capacity equal to zero, repeated cancellation, empty-waitlist cancellation, and waitlisted-user cancellation.
+
+Reason for revision:
+To ensure edge cases are handled explicitly without silent failure.
+
+Triggered by LLM feedback:
+Yes
