@@ -353,25 +353,8 @@ To make consistency apply to both state and returned results.
 Triggered by LLM feedback:
 Yes
 
+
 8. Requirement changed or added:
-   Added requirement that repeated identical operation sequences from the same initial state shall produce the same lists and operation results.
-
-Reason for revision:
-To make deterministic behavior precise and testable.
-
-Triggered by LLM feedback:
-Yes
-
-9. Requirement changed or added:
-   Added requirement that users may register again after canceling, with an explicit result and updated state.
-
-Reason for revision:
-To make re-registration behavior explicit and testable.
-
-Triggered by LLM feedback:
-Partly
-
-10. Requirement changed or added:
     Added explicit edge-case requirements for capacity equal to zero, repeated cancellation, empty-waitlist cancellation, and waitlisted-user cancellation.
 
 Reason for revision:
